@@ -1,0 +1,43 @@
+Edit the script and replace the placeholder URL and selectors with a real site’s structure:
+scrape_event_data("https://example.com/events", "events.csv")
+  
+  Then run:
+python scrape_events.py
+
+
+
+
+  This script uses .event-title and .event-date as placeholders; inspect the actual site you’re scraping.
+
+Always check a site's robots.txt and terms of service before scraping.
+
+python
+Copy
+Edit
+---
+
+## 📁 `automation-tools/pdf_renamer.py`
+
+```python
+"""
+pdf_renamer.py
+Renames all PDF files in a folder to follow a consistent naming pattern.
+
+Author: [Your Name]
+"""
+
+import os
+
+def rename_pdfs(folder_path: str, prefix: str = "document"):
+    """Renames PDF files in the given folder using a numeric sequence."""
+    try:
+        files = [f for f in os.listdir(folder_path) if f.endswith(".pdf")]
+        for i, file in enumerate(files):
+            new_name = f"{prefix}_{i+1}.pdf"
+            os.rename(os.path.join(folder_path, file), os.path.join(folder_path, new_name))
+        print(f"✅ Renamed {len(files)} PDF files in '{folder_path}'")
+    except Exception as e:
+        print(f"❌ Error: {e}")
+
+if __name__ == "__main__":
+    rename_pdfs("pdfs", "report")
