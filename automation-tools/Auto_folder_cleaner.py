@@ -1,29 +1,41 @@
 """
 auto_folder_cleaner.py
-Deletes temporary or duplicate files from a folder based on file extension or name patterns.
+Deletes temporary or duplicate files from a folder based on file extensions.
 
-Author: [Your Name]
+Author: Gracie
 """
 
-import os
+from pathlib import Path
+from typing import List, Optional
+import argparse
 
-def clean_folder(folder_path: str, extensions_to_delete=None):
+def clean_folder(folder_path: str, extensions_to_delete: Optional[List[str]] = None) -> None:
     """
     Deletes files with specified extensions from a folder.
-    Example: clean_folder('downloads', ['.tmp', '.bak'])
+
+    Args:
+        folder_path (str): Path to the folder to clean.
+        extensions_to_delete (List[str], optional): List of file extensions to delete. Defaults to ['.tmp', '.bak'].
     """
     if extensions_to_delete is None:
         extensions_to_delete = ['.tmp', '.bak']
 
+    folder = Path(folder_path)
+    removed_files = 0
+
     try:
-        removed_files = 0
-        for file in os.listdir(folder_path):
-            if any(file.endswith(ext) for ext in extensions_to_delete):
-                os.remove(os.path.join(folder_path, file))
+        for file_path in folder.iterdir():
+            if file_path.is_file() and file_path.suffix in extensions_to_delete:
+                file_path.unlink()
                 removed_files += 1
         print(f"✅ Deleted {removed_files} files from '{folder_path}'")
     except Exception as e:
-        print(f"❌ Error: {e}")
+        print(f"❌ Error cleaning folder '{folder_path}': {e}")
 
 if __name__ == "__main__":
-    clean_folder("downloads", ['.tmp', '.bak'])
+    parser = argparse.ArgumentParser(description='Clean folder by deleting files with specific extensions.')
+    parser.add_argument('folder', help='Path to the folder to clean')
+    parser.add_argument('-e', '--extensions', nargs='+', default=['.tmp', '.bak'], help='File extensions to delete (e.g., .tmp .bak)')
+    args = parser.parse_args()
+
+    clean_folder(args.folder, args.extensions)
